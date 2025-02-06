@@ -7,11 +7,25 @@ const UserSchema = new mongoose.Schema(
             required: true,
             unique: true
         },
-        username: {
-            type: String,
-            required: true,
-            unique: true
+        firstName: { 
+            type: String, 
+            required: true
         },
+        lastName: { 
+            type: String, 
+            required: true
+        },
+        middleName: { 
+            type: String 
+        },
+        phone: {
+            type: String,
+            required: true
+        },
+        role: { 
+            type: String, 
+            enum: ["organizer", "contractor"], 
+            required: true },
         image: {
             type: String,
         },
@@ -19,12 +33,6 @@ const UserSchema = new mongoose.Schema(
             type: String,
             required: true
         }, 
-        activationLink: {
-            type: String,
-        },
-        isActivated: {
-            type: Boolean,
-        }
     },
     { timestamps: true },
 )

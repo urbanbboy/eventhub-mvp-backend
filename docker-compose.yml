@@ -1,0 +1,9 @@
+version: "3"
+services:
+  app:
+    image: my-app
+    restart: always
+    ports:
+      - "5433:5433"
+    environment:
+      - NODE_ENV=production

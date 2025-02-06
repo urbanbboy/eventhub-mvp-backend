@@ -9,28 +9,10 @@ class UserController {
             if (!errors.isEmpty()) {
                 return next(ApiError.BadRequest("Ошибка при валидации", errors.array()))
             }
-            const { email, username, password } = req.body
-            const userData = await UserService.register(email, username, password)
-            const { refreshToken, ...data } = userData
-            res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
-            return res.json(data)
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    async inviteRegister(req, res, next) {
-        try {
-            const errors = validationResult(req)
-            if (!errors.isEmpty()) {
-                return next(ApiError.BadRequest("Ошибка при валидации", errors.array()))
-            }
-            const { token } = req.query
-            const { email, username, password } = req.body
-            const userData = await UserService.inviteRegister(email, username, password, token)
-            const { refreshToken, accessToken, user, boardId } = userData
-            res.cookie('refreshToken', refreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true, sameSite: 'None' })
-            return res.json({accessToken, user, boardId})
+            const { email, password, phone, name, role, acceptTerms, getSMS } = req.body
+            const userData = await UserService.register(email, password, phone, name, role, acceptTerms, getSMS)
+            // const { refreshToken, ...data } = userData
+            return res.json(userData)
         } catch (error) {
             next(error)
         }
@@ -40,13 +22,7 @@ class UserController {
         try {
             const { email, password } = req.body
             const userData = await UserService.login(email, password)
-            const { refreshToken, ...data } = userData
-            res.cookie(
-                'refreshToken',
-                refreshToken,
-                { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true }
-            )
-            return res.json(data)
+            return res.json(userData)
         } catch (error) {
             next(error)
         }
@@ -54,9 +30,8 @@ class UserController {
 
     async logout(req, res, next) {
         try {
-            const { refreshToken } = req.cookies
+            const { refreshToken } = req.body
             await UserService.logout(refreshToken)
-            res.clearCookie('refreshToken')
             return res.status(200).json({ message: "Вы вышли из аккаунта" })
         } catch (error) {
             next(error)
@@ -73,16 +48,6 @@ class UserController {
             }
             res.cookie('refreshToken', newRefreshToken, { maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true })
             return res.json(data)
-        } catch (error) {
-            next(error)
-        }
-    }
-
-    async activate(req, res, next) {
-        try {
-            const activationLink = req.params.link
-            await UserService.activate(activationLink)
-            return res.redirect(process.env.VERCEL_CLIENT_URL)
         } catch (error) {
             next(error)
         }
