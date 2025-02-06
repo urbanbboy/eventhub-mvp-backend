@@ -13,8 +13,7 @@ const app = express()
 app.use(express.json())
 app.use(cors({
     credentials: true,
-    origin: '*',
-    origin: [process.env.CLIENT_URL],
+    origin: [process.env.CLIENT_URL, process.env.CLIENT_VERCEL_URL],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ["Content-Type", "Authorization"],
 }))
